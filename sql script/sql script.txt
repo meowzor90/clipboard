@@ -1,0 +1,158 @@
+-- phpMyAdmin SQL Dump
+-- version 3.4.5
+-- http://www.phpmyadmin.net
+--
+-- Host: localhost
+-- Generation Time: Jan 11, 2015 at 03:07 PM
+-- Server version: 5.6.5
+-- PHP Version: 5.3.8
+
+SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+
+--
+-- Database: `clipboarddatabase`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user`
+--
+
+CREATE TABLE IF NOT EXISTS `user` (
+  `accountID` int NOT NULL AUTO_INCREMENT,	
+  `username` varchar(50) NOT NULL,				//This is name for log in
+  `password` varchar(100) NOT NULL,
+  `name` varchar(10) NOT NULL,					//This is for display in the category list
+  `email` varchar(100) NOT NULL,
+  `age` int NOT NULL,
+  `sex` varchar(2) NOT NULL,
+  `dateJoined` datetime NOT NULL DEFAULT NOW(),
+  `mobileNO` int NOT NULL,
+  `description` varchar(200) NOT NULL,
+  `photo` varBinary(MAX),						//Can be null, at most we put a default photo for the user
+  `creditNO` varchar(100) NULL,
+  `PaypalACC` varchar(100) NULL,  
+  PRIMARY KEY (`accountID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `service`
+--
+
+CREATE TABLE IF NOT EXISTS `service` (
+  `serviceID` int NOT NULL AUTO_INCREMENT,	       							
+  `accountID` int NOT NULL,							//This is to link to the user (accountID)
+  `titleShort` varchar(30) NOT NULL,				//Short description of the service in the category page
+  `titleLong` varchar(50) NOT NULL,					//Long description of the service in the item page (Should we forgo this?)
+  `description` varchar(100) NOT NULL,				//Long description in the item page
+  `location` varchar(20) NOT NULL,
+  `rates` varchar(10) NOT NULL,
+  `likes` int NOT NULL DEFAULT 0,	
+  `tags` varchar(100) NOT NULL,						//Should we create a tag item?
+  `dateCreated` datetime NOT NULL DEFAULT NOW(),
+  `photo` varBinary(MAX),						//Can be null, at most we put a default photo for the service
+  PRIMARY KEY (`serviceID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `request`
+--
+
+CREATE TABLE IF NOT EXISTS `request` (
+  `serviceID` int NOT NULL,	       					//This is to link to service (serviceID)	 					
+  `requesterID` int NOT NULL,						//This is to link to the user (accountID)
+  `requestState` varchar(30) NOT NULL,				//3 states to show the status of the request (Pending, accepted, closed)
+  `dateCreated` datetime NOT NULL DEFAULT NOW()
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `comment`
+--
+
+CREATE TABLE IF NOT EXISTS `comment` (
+  `commentID` int NOT NULL AUTO_INCREMENT,	 					
+  `commentor` int NOT NULL,							//This is to link to the user (accountID)
+  `serviceID` int NOT NULL,							//This is to link to the service (serviceID)
+  `description` varchar(50) NOT NULL,					//comment description
+  `public` tinyint(1) DEFAULT 0,  					// 0 for false (private), 1 for true
+  `dateCreated` datetime NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (`commentID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `wishlist`
+--
+
+CREATE TABLE IF NOT EXISTS `wishlist` (
+  `accountID` int NOT NULL,							//This is to link to the user (accountID)
+  `description` varchar(50) NOT NULL,					//wishlist description
+  `location` varchar(20) NOT NULL,
+  `dateCreated` datetime NOT NULL DEFAULT NOW()
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `follower`
+--
+
+CREATE TABLE IF NOT EXISTS `follower` (
+  `followingID` int NOT NULL,							//This is to link to the follower (accountID)       
+  `followedID` int NOT NULL,							//This is to link to the followed user (accountID)  
+  `dateCreated` datetime NOT NULL DEFAULT NOW()
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `notification`
+--
+
+CREATE TABLE IF NOT EXISTS `notification` (
+  `notificationID` int NOT NULL AUTO_INCREMENT,	 				
+  `serviceID` int NOT NULL,								//This is to link to the service   
+  `requesterID` int NOT NULL,							//This is to link to the requester (account ID)  
+  `description` varchar(50) NOT NULL,						//notification description
+  `dateCreated` datetime NOT NULL DEFAULT NOW(),
+   PRIMARY KEY (`notificationID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `security`
+--
+
+CREATE TABLE IF NOT EXISTS `security` (
+  `securityID` int NOT NULL AUTO_INCREMENT,	 				
+  `accountID` int NOT NULL,								//This is to link to the account  
+  `plan` varchar(30) NOT NULL DEFAULT 'free',						//plan description (free, premimum, vip) or should we do tinyint(3) and default 0
+  `dateExpired` datetime NOT NULL DEFAULT NOW() +INTERVAL 6 MONTH,	//Haven try this yet
+   PRIMARY KEY (`securityID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
